@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>📚 Шкільна система тестування</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+  <!-- Шапка сайту -->
+  <header class="header" id="header" style="display:none;">
+    <div class="header-inner">
+      <span class="header-title">📚 Тести</span>
+      <div class="header-actions">
+        <button class="btn btn-secondary btn-sm" id="themeToggle" title="Змінити тему">🌙</button>
+        <span class="user-info" id="userInfo"></span>
+        <button class="btn btn-secondary btn-sm" id="logoutBtn" style="display:none;">Вихід</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Основний контент -->
+  <main class="main-content" id="mainContent">
+
+    <!-- === ВХІД === -->
+    <section id="login-section" class="auth-section" style="display:none;">
+      <div class="card auth-card">
+        <h2 class="card-title">Вхід у систему</h2>
+        <form id="loginForm">
+          <div class="form-group">
+            <label>Логін</label>
+            <input type="text" id="loginUsername" placeholder="Введіть логін" required>
+          </div>
+          <div class="form-group">
+            <label>Пароль</label>
+            <input type="password" id="loginPassword" placeholder="Введіть пароль" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Увійти</button>
+        </form>
+        <p class="auth-link">Немає облікового запису? <a href="#register">Зареєструватися</a></p>
+      </div>
+    </section>
+
+    <!-- === РЕЄСТРАЦІЯ === -->
+    <section id="register-section" class="auth-section" style="display:none;">
+      <div class="card auth-card">
+        <h2 class="card-title">Реєстрація учня</h2>
+        <form id="registerForm">
+          <div class="form-group">
+            <label>Логін</label>
+            <input type="text" id="regUsername" placeholder="Придумайте логін" required>
+          </div>
+          <div class="form-group">
+            <label>Повне ім'я</label>
+            <input type="text" id="regFullName" placeholder="Прізвище та ім'я" required>
+          </div>
+          <div class="form-group">
+            <label>Клас</label>
+            <select id="regClass"><option value="">— Оберіть клас —</option></select>
+          </div>
+          <div class="form-group">
+            <label>Пароль</label>
+            <input type="password" id="regPassword" placeholder="Придумайте пароль" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Зареєструватися</button>
+        </form>
+        <p class="auth-link">Вже є акаунт? <a href="#login">Увійти</a></p>
+      </div>
+    </section>
+
+    <!-- === ДАШБОРД УЧНЯ === -->
+    <section id="student-section" style="display:none;">
+      <div class="flex justify-between items-center mt-2 mb-2" style="flex-wrap:wrap;gap:.5rem;">
+        <h2 class="card-title" style="margin:0;">Мої тести</h2>
+        <a href="#results" class="btn btn-secondary btn-sm">📊 Мої результати</a>
+      </div>
+      <div id="studentTestList" class="test-list"></div>
+    </section>
+
+    <!-- === РЕЗУЛЬТАТИ УЧНЯ === -->
+    <section id="results-section" style="display:none;">
+      <div class="flex justify-between items-center mt-2 mb-2" style="flex-wrap:wrap;gap:.5rem;">
+        <h2 class="card-title" style="margin:0;">Мої результати</h2>
+        <a href="#dashboard" class="btn btn-secondary btn-sm">← Назад до тестів</a>
+      </div>
+      <div id="resultsList"></div>
+    </section>
+
+    <!-- === КВІЗ === -->
+    <section id="quiz-section" style="display:none;">
+      <div class="card">
+        <div class="quiz-header">
+          <div>
+            <div class="quiz-title" id="quizTitle"></div>
+            <div class="quiz-progress-text" id="quizProgressText"></div>
+          </div>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" id="progressBar" style="width:0%"></div>
+        </div>
+        <div class="question-text" id="questionText"></div>
+        <div class="options-grid" id="optionsGrid"></div>
+        <div id="quizNav" class="mt-2" style="display:none;">
+          <button class="btn btn-primary" id="nextBtn">Наступне питання →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- === РЕЗУЛЬТАТ КВІЗУ === -->
+    <section id="quiz-result-section" style="display:none;">
+      <div class="card result-card">
+        <div class="result-grade" id="resultGrade"></div>
+        <div class="result-label">Оцінка</div>
+        <div class="result-stats">
+          <div class="result-stat">
+            <div class="result-stat-val text-success" id="resultCorrect" style="color:var(--success)"></div>
+            <div class="result-stat-desc">Правильних</div>
+          </div>
+          <div class="result-stat">
+            <div class="result-stat-val" id="resultTotal"></div>
+            <div class="result-stat-desc">Всього</div>
+          </div>
+        </div>
+        <a href="#dashboard" class="btn btn-primary">← До списку тестів</a>
+        <div class="answer-review mt-3" id="answerReview"></div>
+      </div>
+    </section>
+
+    <!-- === АДМІН ПАНЕЛЬ === -->
+    <section id="admin-section" style="display:none;">
+      <h2 class="card-title mt-2">Панель адміністратора</h2>
+      <div class="admin-tabs">
+        <button class="tab-btn active" data-tab="tab-classes">Класи</button>
+        <button class="tab-btn" data-tab="tab-subjects">Предмети</button>
+        <button class="tab-btn" data-tab="tab-topics">Теми</button>
+        <button class="tab-btn" data-tab="tab-questions">Запитання</button>
+        <button class="tab-btn" data-tab="tab-tests">Тести</button>
+        <button class="tab-btn" data-tab="tab-users">Учні</button>
+      </div>
+
+      <!-- Вкладка: Класи -->
+      <div id="tab-classes" class="tab-pane active">
+        <div class="section-header">
+          <span class="section-title">Класи</span>
+          <button class="btn btn-primary btn-sm" id="addClassBtn">+ Додати клас</button>
+        </div>
+        <div class="table-wrap"><table class="data-table">
+          <thead><tr><th>#</th><th>Назва</th><th>Клас</th><th>Дії</th></tr></thead>
+          <tbody id="classesTBody"></tbody>
+        </table></div>
+      </div>
+
+      <!-- Вкладка: Предмети -->
+      <div id="tab-subjects" class="tab-pane">
+        <div class="section-header">
+          <span class="section-title">Предмети</span>
+          <button class="btn btn-primary btn-sm" id="addSubjectBtn">+ Додати предмет</button>
+        </div>
+        <div class="table-wrap"><table class="data-table">
+          <thead><tr><th>#</th><th>Назва</th><th>Дії</th></tr></thead>
+          <tbody id="subjectsTBody"></tbody>
+        </table></div>
+      </div>
+
+      <!-- Вкладка: Теми -->
+      <div id="tab-topics" class="tab-pane">
+        <div class="section-header">
+          <span class="section-title">Теми</span>
+          <button class="btn btn-primary btn-sm" id="addTopicBtn">+ Додати тему</button>
+        </div>
+        <div class="table-wrap"><table class="data-table">
+          <thead><tr><th>#</th><th>Предмет</th><th>Тема</th><th>Дії</th></tr></thead>
+          <tbody id="topicsTBody"></tbody>
+        </table></div>
+      </div>
+
+      <!-- Вкладка: Запитання -->
+      <div id="tab-questions" class="tab-pane">
+        <div class="section-header">
+          <span class="section-title">Запитання</span>
+          <div class="flex gap-1 flex-wrap">
+            <button class="btn btn-secondary btn-sm" id="importQBtn">📥 Імпорт JSON</button>
+            <button class="btn btn-primary btn-sm" id="addQuestionBtn">+ Додати запитання</button>
+          </div>
+        </div>
+        <div class="form-group" style="max-width:300px;">
+          <select id="filterTopicQ"><option value="">— Фільтр за темою —</option></select>
+        </div>
+        <div class="table-wrap"><table class="data-table">
+          <thead><tr><th>#</th><th>Тема</th><th>Запитання</th><th>Правильна</th><th>Дії</th></tr></thead>
+          <tbody id="questionsTBody"></tbody>
+        </table></div>
+      </div>
+
+      <!-- Вкладка: Тести -->
+      <div id="tab-tests" class="tab-pane">
+        <div class="section-header">
+          <span class="section-title">Тести</span>
+          <button class="btn btn-primary btn-sm" id="addTestBtn">+ Створити тест</button>
+        </div>
+        <div class="table-wrap"><table class="data-table">
+          <thead><tr><th>#</th><th>Назва</th><th>Тема</th><th>Запитань</th><th>Дії</th></tr></thead>
+          <tbody id="testsTBody"></tbody>
+        </table></div>
+      </div>
+
+      <!-- Вкладка: Учні -->
+      <div id="tab-users" class="tab-pane">
+        <div class="section-header"><span class="section-title">Учні</span></div>
+        <div class="table-wrap"><table class="data-table">
+          <thead><tr><th>#</th><th>Логін</th><th>Ім'я</th><th>Клас</th><th>Дії</th></tr></thead>
+          <tbody id="usersTBody"></tbody>
+        </table></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======= МОДАЛЬНІ ВІКНА ======= -->
+
+  <!-- Клас -->
+  <div class="modal-overlay" id="classModal">
+    <div class="modal-box">
+      <div class="modal-title" id="classModalTitle">Клас</div>
+      <div class="form-group"><label>Назва (напр. 10-А)</label><input type="text" id="className"></div>
+      <div class="form-group"><label>Номер класу (5-11)</label><input type="number" id="classGrade" min="5" max="11"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('classModal')">Скасувати</button>
+        <button class="btn btn-primary" id="saveClassBtn">Зберегти</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Предмет -->
+  <div class="modal-overlay" id="subjectModal">
+    <div class="modal-box">
+      <div class="modal-title" id="subjectModalTitle">Предмет</div>
+      <div class="form-group"><label>Назва предмету</label><input type="text" id="subjectName"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('subjectModal')">Скасувати</button>
+        <button class="btn btn-primary" id="saveSubjectBtn">Зберегти</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Тема -->
+  <div class="modal-overlay" id="topicModal">
+    <div class="modal-box">
+      <div class="modal-title" id="topicModalTitle">Тема</div>
+      <div class="form-group"><label>Предмет</label><select id="topicSubjectId"></select></div>
+      <div class="form-group"><label>Назва теми</label><input type="text" id="topicName"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('topicModal')">Скасувати</button>
+        <button class="btn btn-primary" id="saveTopicBtn">Зберегти</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Запитання -->
+  <div class="modal-overlay" id="questionModal">
+    <div class="modal-box">
+      <div class="modal-title" id="questionModalTitle">Запитання</div>
+      <div class="form-group"><label>Тема</label><select id="questionTopicId"></select></div>
+      <div class="form-group"><label>Текст запитання</label><textarea id="questionText2" rows="3"></textarea></div>
+      <div class="form-group"><label>Варіант А</label><input type="text" id="qOptA"></div>
+      <div class="form-group"><label>Варіант Б</label><input type="text" id="qOptB"></div>
+      <div class="form-group"><label>Варіант В</label><input type="text" id="qOptC"></div>
+      <div class="form-group"><label>Варіант Г</label><input type="text" id="qOptD"></div>
+      <div class="form-group">
+        <label>Правильна відповідь</label>
+        <select id="qCorrect">
+          <option value="a">А</option><option value="b">Б</option>
+          <option value="c">В</option><option value="d">Г</option>
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('questionModal')">Скасувати</button>
+        <button class="btn btn-primary" id="saveQuestionBtn">Зберегти</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Імпорт JSON -->
+  <div class="modal-overlay" id="importModal">
+    <div class="modal-box">
+      <div class="modal-title">Імпорт запитань з JSON</div>
+      <p class="text-muted" style="font-size:.85rem;margin-bottom:.75rem;">
+        Вставте JSON масив запитань. Кожен елемент: topic_id, question_text, option_a, option_b, option_c, option_d, correct_option (a/b/c/d)
+      </p>
+      <div class="form-group"><textarea id="importJson" rows="10" placeholder='[{"topic_id":1,"question_text":"...","option_a":"...","option_b":"...","option_c":"...","option_d":"...","correct_option":"a"}]'></textarea></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('importModal')">Скасувати</button>
+        <button class="btn btn-primary" id="doImportBtn">Імпортувати</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Тест -->
+  <div class="modal-overlay" id="testModal">
+    <div class="modal-box">
+      <div class="modal-title" id="testModalTitle">Тест</div>
+      <div class="form-group"><label>Назва тесту</label><input type="text" id="testName"></div>
+      <div class="form-group"><label>Тема</label><select id="testTopicId"></select></div>
+      <div class="form-group">
+        <label>Кількість запитань</label>
+        <select id="testQCount"><option value="12">12</option><option value="24">24</option></select>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('testModal')">Скасувати</button>
+        <button class="btn btn-primary" id="saveTestBtn">Зберегти</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Призначення тесту -->
+  <div class="modal-overlay" id="assignModal">
+    <div class="modal-box">
+      <div class="modal-title">Призначити тест</div>
+      <p class="text-muted" style="font-size:.85rem;margin-bottom:.75rem;">Оберіть клас або окремого учня</p>
+      <div class="form-group"><label>Клас (або залиште порожнім)</label><select id="assignClass"><option value="">— Не вибрано —</option></select></div>
+      <div class="form-group"><label>Учень (або залиште порожнім)</label><select id="assignStudent"><option value="">— Не вибрано —</option></select></div>
+      <div class="form-group"><label>Дедлайн (необов'язково)</label><input type="datetime-local" id="assignDeadline"></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('assignModal')">Скасувати</button>
+        <button class="btn btn-primary" id="doAssignBtn">Призначити</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Зміна класу учня -->
+  <div class="modal-overlay" id="userClassModal">
+    <div class="modal-box">
+      <div class="modal-title">Змінити клас учня</div>
+      <div class="form-group"><label>Клас</label><select id="userClassSelect"><option value="">— Без класу —</option></select></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('userClassModal')">Скасувати</button>
+        <button class="btn btn-primary" id="saveUserClassBtn">Зберегти</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast повідомлення -->
+  <div class="toast" id="toast"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/quiz.js"></script>
+  <script src="/js/admin.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+version: '3.8'
+
+# Конфігурація сервісів для шкільної системи тестування
+services:
+
+  # Веб-сервер Nginx — роздає статику та проксує запити до PHP
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./src:/var/www/html
+    depends_on:
+      - php
+    networks:
+      - school_network
+
+  # PHP-FPM сервер — обробляє API запити
+  php:
+    build: ./php
+    volumes:
+      - ./src:/var/www/html
+      - ./parsers:/var/www/parsers
+    environment:
+      - MYSQL_HOST=mysql
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - school_network
+
+  # База даних MySQL 8.0
+  mysql:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - school_network
+
+  # PhpMyAdmin — веб-інтерфейс для управління БД (порт 8080)
+  phpmyadmin:
+    image: phpmyadmin:latest
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=mysql
+      - PMA_USER=${MYSQL_USER}
+      - PMA_PASSWORD=${MYSQL_PASSWORD}
+    depends_on:
+      - mysql
+    networks:
+      - school_network
+
+# Том для збереження даних MySQL між перезапусками
+volumes:
+  mysql_data:
+
+# Внутрішня мережа між сервісами
+networks:
+  school_network:
+    driver: bridge
