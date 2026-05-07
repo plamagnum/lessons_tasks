@@ -74,8 +74,8 @@ CREATE TABLE IF NOT EXISTS test_questions (
 CREATE TABLE IF NOT EXISTS test_assignments (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     test_id     INT NOT NULL REFERENCES tests(id) ON DELETE CASCADE,
-    class_id    INT NULL REFERENCES classes(id) ON DELETE CASCADE COMMENT 'NULL якщо індивідуально',
-    student_id  INT NULL REFERENCES users(id) ON DELETE CASCADE COMMENT 'NULL якщо всьому класу',
+    class_id    INT NULL COMMENT 'NULL якщо індивідуально' REFERENCES classes(id) ON DELETE CASCADE,
+    student_id  INT NULL COMMENT 'NULL якщо всьому класу' REFERENCES users(id) ON DELETE CASCADE,
     assigned_by INT NOT NULL REFERENCES users(id),
     assigned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     deadline    DATETIME NULL
